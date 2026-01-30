@@ -1,7 +1,7 @@
 import socket
 ip = socket.gethostbyname(input("Digite o ip ou url do alvo:\n"))
+nome_log = input("Digite o nome do arquivo de log: \n")
 
-print("Carregando o arquivo lista_ips.txt: \n")
 with open("lista_ips.txt", "r", encoding="utf-8") as arquivo:
      lista_portas = arquivo.read()
      nova_lista = map(int, lista_portas.split())
@@ -11,7 +11,12 @@ with open("lista_ips.txt", "r", encoding="utf-8") as arquivo:
           resultado = conexao.connect_ex((ip, portas))
           if resultado == 0:
                print (f"[+] Porta aberta: {portas}")
+               with open(f"{nome_log}.txt", "a", encoding="utf-8") as arquivo:
+                    arquivo.write(f"Porta aberta: {portas} \n")
           else:
                print(f"[-] Porta fechada: {portas}")
-          conexao.close()
+               with open(f"{nome_log}.txt", "a", encoding="utf-8") as arquivo:
+                    arquivo.write(f"Porta fechada: {portas} \n")
+          conexao.close()     
+
 print("Scanner finalizado")
