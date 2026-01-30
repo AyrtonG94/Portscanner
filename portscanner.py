@@ -1,5 +1,6 @@
 import socket
-ip = input("Digite o ip alvo:\n")
+ip = socket.gethostbyname(input("Digite o ip ou url do alvo:\n"))
+
 print("Carregando o arquivo lista_ips.txt: \n")
 with open("lista_ips.txt", "r", encoding="utf-8") as arquivo:
      lista_portas = arquivo.read()
