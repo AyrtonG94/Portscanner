@@ -12,7 +12,7 @@ def scan_tcp():
                conexao.settimeout(1)
                resultado = conexao.connect_ex((ip, portas))
                if resultado == 0:
-                    print (f"[+] Porta TCP aberta: {portas}")
+                    print (conexao.recv(1024))
                     with open(f"{nome_log}.txt", "a", encoding="utf-8") as arquivo:
                          arquivo.write(f"Porta aberta: {portas} \n")
                else:
@@ -54,3 +54,5 @@ t1 = threading.Thread(None, scan_tcp, 't1')
 t2 = threading.Thread(None, scan_upd, 't2')
 t1.start()
 t2.start()
+t1.join()
+t2.join()
