@@ -8,24 +8,26 @@ parser.add_argument('-udp', '--upd', type=str, required=False)
 args = parser.parse_args()
 ip = args.target
 list_ports = args.ports
-ports = list_ports.split(',')
-tcp_args = args.tcp
+ports = list_ports.split('-')
  
 def scanTCP():
  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socketClient: 
-  for i in ports:
-     port = int(i)
-     socketClient.settimeout(0.5)
-     result = socketClient.connect_ex((ip,port))
-     if result == 0:
-       print('Porta aberta')
-     else:
+  for i  in ports:
+    port = int(i)
+    socketClient.settimeout(1.0) 
+    result = socketClient.connect_ex((ip,port))
+    if result == 0 :
+      teste = socketClient.recv(1024)
+      print(f'Porta {port} aberta', teste.decode())
+    else:
       print('Porta fechada ou filtrada')
-     socketClient.close()
+ socketClient.close()
 
 
-if tcp_args:
-    scanTCP()
-
+if args.tcp and args.upd:
+    print('Você não pode usar TCP e UDP ao mesmo tempo')
+elif args.tcp:
+  scanTCP()
 else:
-   print('teste')
+   print(list(range(1, 80)))
+   
