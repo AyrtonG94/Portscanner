@@ -1,11 +1,11 @@
-import argparse, socket, concurrent.futures
+import argparse, socket, concurrent.futures, ipaddress
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-t','--target', type=str, required=True)
 parser.add_argument('-p', '--ports', type=str,required=True)
-parser.add_argument('-tcp', '--tcp', action='store_true')
-parser.add_argument('-udp', '--upd', action='store_true')
-parser.add_argument('-threads', '--threads', type=int, required=True)
+parser.add_argument('--tcp', action='store_true')
+parser.add_argument('--udp', action='store_true')
+parser.add_argument('--threads', type=int, required=True)
 args = parser.parse_args()
 ip = args.target
 list_ports = args.ports
@@ -24,14 +24,19 @@ def scanTCP(port):
           except (socket.timeout, TimeoutError):
             print(f'Porta {port} aberta (Serviço Silencioso)')
             return  f"Porta: {port} Serviço Silencioso"
- 
-if args.tcp and args.upd:
+
+if args.tcp and args.udp:
     print('Você não pode usar TCP e UDP ao mesmo tempo')
-elif args.tcp:
-  with concurrent.futures.ThreadPoolExecutor(max_workers=args.threads) as executor:
-    results = executor.map(scanTCP, ports)
-  with open('resultado.txt', 'w') as file:
-    for i in results:
-      if i:
-       file.write(f'{i} \n')
-      
+
+elif ip:
+  try:
+    str(ipaddress.ip_address(ip))
+    if args.tcp:
+     with concurrent.futures.ThreadPoolExecutor(max_workers=args.threads) as executor:
+      results = executor.map(scanTCP, ports)
+      with open('resultado.txt', 'w') as file:
+        for i in results:
+         if i:
+          file.write(f'{i} \n')
+  except ValueError as erro:
+    print(f'Digite um enderço de ip válido {erro}')
