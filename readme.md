@@ -15,4 +15,4 @@ Um scanner de portas TCP robusto e veloz desenvolvido em Python, utilizando conc
     Controle de Performance: Permite ao usuário definir o número de threads via CLI.
 
 **🚀 Como usar**
- python scanner.py -t 192.168.1.1 -p 20-443 --tcp --threads 100 
+ ```python scanner.py -t 192.168.1.1 -p 20-443 --tcp --threads 100``
