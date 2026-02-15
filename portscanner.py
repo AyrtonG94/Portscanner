@@ -12,31 +12,34 @@ list_ports = args.ports
 ports = list_ports.split('-')
 ports = range(int(ports[0]), int(ports[1]) + 1)
 
-def scanTCP(port):
-       with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socketClient: 
-        socketClient.settimeout(0.5) 
-        result = socketClient.connect_ex((ip,port))    
+def scan_tcp(port: int) -> str:
+       with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket_client: 
+        socket_client.settimeout(0.5) 
+        result = socket_client.connect_ex((ip,port))    
         if result == 0:
           try:
-            bannerGrab = socketClient.recv(1024)
-            print(f"Porta {port} aberta -  Serviço: {bannerGrab.decode('latin_1').strip()}")
-            return f"Porta {port}: {bannerGrab.decode('latin_1').strip()}"
+            banner_grab = socket_client.recv(1024)
+            print(f"Porta {port} aberta -  Serviço: {banner_grab.decode('latin_1').strip()}")
+            return f"Porta {port}: {banner_grab.decode('latin_1').strip()}"
           except (socket.timeout, TimeoutError):
             print(f'Porta {port} aberta (Serviço Silencioso)')
             return  f"Porta: {port} Serviço Silencioso"
 
 if args.tcp and args.udp:
-    print('Você não pode usar TCP e UDP ao mesmo tempo')
+    exit('Você não pode usar TCP e UDP ao mesmo tempo')
+    
+if not args.target:
+  exit('Obrigatório especificar um endereço de IP')
 
-elif ip:
-  try:
-    str(ipaddress.ip_address(ip))
-    if args.tcp:
+try:
+	str(ipaddress.ip_address(ip))
+except ValueError as erro:
+    print(f'Digite um enderço de ip válido {erro}')
+    
+if args.tcp:
      with concurrent.futures.ThreadPoolExecutor(max_workers=args.threads) as executor:
-      results = executor.map(scanTCP, ports)
+      results = executor.map(scan_tcp, ports)
       with open('resultado.txt', 'w') as file:
         for i in results:
          if i:
           file.write(f'{i} \n')
-  except ValueError as erro:
-    print(f'Digite um enderço de ip válido {erro}')
